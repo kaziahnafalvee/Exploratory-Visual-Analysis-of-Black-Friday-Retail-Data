@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer-Product Network</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    svg {
+      width: 100%;
+      height: 800px;
+    }
+    .tooltip {
+      position: absolute;
+      background: white;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      pointer-events: none;
+      box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    }
+    .legend {
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .legend span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+      border-radius: 3px;
+    }
+    select, button {
+      margin-bottom: 10px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Customer-Product Network Graph</h2>
+  <p>Visualizing top 200 users and their connections to top 50 products. Use this to explore purchasing clusters and product popularity.</p>
+
+  <label for="cityFilter">Filter users by city:</label>
+  <select id="cityFilter">
+    <option value="All">All Cities</option>
+  </select>
+  <button id="resetButton">Reset</button>
+
+  <div class="legend">
+    <strong>Legend:</strong>
+    <span style="background:#1f77b4"></span> Male User
+    <span style="background:#ff7f0e"></span> Female User
+    <span style="background:#999"></span> Product
+  </div>
+
+  <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet"></svg>
+  <script>
+    const svg = d3.select("svg"),
+          width = 1200,
+          height = 800,
+          color = d3.scaleOrdinal().domain(["M", "F", "product"]).range(["#1f77b4", "#ff7f0e", "#999"]);
+
+    const tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+
+    d3.json("customer_product_network.json").then(data => {
+      const allCities = Array.from(new Set(data.nodes.filter(d => d.group === "user").map(d => d.city)));
+      const cityFilter = d3.select("#cityFilter");
+      allCities.forEach(city => {
+        cityFilter.append("option").attr("value", city).text(city);
+      });
+
+      cityFilter.on("change", () => {
+        const selectedCity = cityFilter.property("value");
+        updateGraph(selectedCity);
+      });
+
+      d3.select("#resetButton").on("click", () => {
+        cityFilter.property("value", "All");
+        updateGraph("All");
+      });
+
+      updateGraph("All");
+
+      function updateGraph(selectedCity) {
+        svg.selectAll("g").remove();
+
+        const filteredNodes = data.nodes.filter(d => selectedCity === "All" || d.group === "product" || d.city === selectedCity);
+        const filteredNodeIds = new Set(filteredNodes.map(d => d.id));
+        const filteredLinks = data.links.filter(d => filteredNodeIds.has(d.source) && filteredNodeIds.has(d.target));
+
+        const simulation = d3.forceSimulation(filteredNodes)
+          .force("link", d3.forceLink(filteredLinks).id(d => d.id).distance(50))
+          .force("charge", d3.forceManyBody().strength(-80))
+          .force("center", d3.forceCenter(width / 2, height / 2))
+          .alpha(1).restart();
+
+        const link = svg.append("g")
+          .attr("stroke", "#aaa")
+          .attr("stroke-opacity", 0.6)
+          .selectAll("line")
+          .data(filteredLinks)
+          .join("line")
+          .attr("stroke-width", 0.8);
+
+        const node = svg.append("g")
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 1.5)
+          .selectAll("circle")
+          .data(filteredNodes)
+          .join("circle")
+          .attr("r", 4)
+          .attr("fill", d => d.group === "product" ? color("product") : color(d.gender))
+          .call(drag(simulation))
+          .on("mouseover", (event, d) => {
+            tooltip.transition().duration(200).style("opacity", 0.95);
+            tooltip.html(
+              d.group === "product"
+                ? `<strong>Product</strong><br>ID: ${d.id}`
+                : `<strong>User</strong><br>ID: ${d.id}<br>Gender: ${d.gender}<br>City: ${d.city}`
+            )
+              .style("left", (event.pageX + 10) + "px")
+              .style("top", (event.pageY - 28) + "px");
+          })
+          .on("mouseout", () => tooltip.transition().duration(500).style("opacity", 0));
+
+        simulation.on("tick", () => {
+          link.attr("x1", d => d.source.x)
+              .attr("y1", d => d.source.y)
+              .attr("x2", d => d.target.x)
+              .attr("y2", d => d.target.y);
+
+          node.attr("cx", d => d.x)
+              .attr("cy", d => d.y);
+        });
+      }
+
+      function drag(simulation) {
+        return d3.drag()
+          .on("start", event => {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+          })
+          .on("drag", event => {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+          })
+          .on("end", event => {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+          });
+      }
+    });
+  </script>
+</body>
+</html>

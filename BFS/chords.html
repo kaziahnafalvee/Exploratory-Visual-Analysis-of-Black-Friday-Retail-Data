@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Category Chord Diagram</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    svg {
+      width: 960px;
+      height: 800px;
+    }
+    .group path {
+      fill-opacity: 0.7;
+    }
+    .chord path {
+      fill-opacity: 0.6;
+      stroke: #000;
+      stroke-width: 0.5px;
+    }
+    .tooltip {
+      position: absolute;
+      background: white;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      pointer-events: none;
+      box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <h2>Product Category Co-Purchase Chord Diagram</h2>
+  <p>This circular diagram shows how often product categories are co-purchased. Thicker arcs = stronger connections.</p>
+  <label for="categoryFilter"><strong>Focus on Category:</strong></label>
+<select id="categoryFilter"></select>
+<svg></svg>
+  <script>
+    const svg = d3.select("svg")
+      .attr("viewBox", [0, 0, 960, 800])
+      .attr("preserveAspectRatio", "xMidYMid meet"),
+      width = 960,
+      height = 800,
+      outerRadius = Math.min(width, height) * 0.4,
+          innerRadius = outerRadius - 30;
+
+    const tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    d3.json("product_category_network.json").then(data => {
+      const select = d3.select("#categoryFilter");
+      const categoryNames = Array.from(new Set(data.nodes.map(d => d.id))).sort();
+      const indexMap = new Map(categoryNames.map((cat, i) => [cat, i]));
+
+      const matrix = Array.from({ length: categoryNames.length }, () => new Array(categoryNames.length).fill(0));
+
+      for (const link of data.links) {
+        const i = indexMap.get(link.source);
+        const j = indexMap.get(link.target);
+        if (i != null && j != null) {
+          matrix[i][j] += link.value;
+          matrix[j][i] += link.value;
+        }
+      }
+
+      const chord = d3.chord()
+        .padAngle(0.05)
+        .sortSubgroups(d3.descending)
+        (matrix);
+
+      // Dropdown options
+      select.append("option").attr("value", "all").text("All Categories");
+      categoryNames.forEach(cat => {
+        select.append("option").attr("value", cat).text(cat);
+      });
+
+      select.on("change", () => highlightCategory(select.property("value")));
+
+      function highlightCategory(focusCat) {
+        svg.selectAll(".chords path")
+          .transition().duration(400)
+          .style("opacity", d => {
+            if (focusCat === "all") return 0.7;
+            return categoryNames[d.source.index] === focusCat || categoryNames[d.target.index] === focusCat ? 0.9 : 0.1;
+          });
+      }
+
+      const arc = d3.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius);
+
+      const ribbon = d3.ribbon()
+        .radius(innerRadius);
+
+      const g = svg.append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`);
+
+      const group = g.append("g")
+        .attr("class", "groups")
+        .selectAll("g")
+        .data(chord.groups)
+        .join("g");
+
+      group.append("path")
+        .attr("fill", d => color(d.index))
+        .attr("stroke", d => d3.rgb(color(d.index)).darker())
+        .attr("d", arc);
+
+      group.append("text")
+        .each(d => { d.angle = (d.startAngle + d.endAngle) / 2; })
+        .attr("dy", ".35em")
+        .attr("transform", d => `rotate(${(d.angle * 180 / Math.PI - 90)}) translate(${outerRadius + 5})${d.angle > Math.PI ? " rotate(180)" : ""}`)
+        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+        .text(d => categoryNames[d.index]);
+
+      const topLinks = data.links.sort((a, b) => b.value - a.value).slice(0, 3);
+      const topPairs = new Set(topLinks.map(l => `${l.source}||${l.target}`));
+
+      g.append("g")
+        .attr("class", "chords")
+        .selectAll("path")
+        .data(chord)
+        .join("path")
+        .attr("d", ribbon)
+        .attr("fill", d => color(d.target.index))
+        .attr("stroke", d => topPairs.has(`${categoryNames[d.source.index]}||${categoryNames[d.target.index]}`) ? "#000" : d3.rgb(color(d.target.index)).darker())
+        .attr("stroke-width", d => topPairs.has(`${categoryNames[d.source.index]}||${categoryNames[d.target.index]}`) ? 2 : 0.5)
+        .on("mouseover", (event, d) => {
+          tooltip.transition().duration(200).style("opacity", 0.95);
+          tooltip.html(`${categoryNames[d.source.index]} ⟶ ${categoryNames[d.target.index]}: ${matrix[d.source.index][d.target.index]} co-purchases`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", () => tooltip.transition().duration(500).style("opacity", 0));
+    });
+  </script>
+</body>
+</html>

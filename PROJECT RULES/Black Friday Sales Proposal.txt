@@ -1,0 +1,96 @@
+# **Project Proposal: Black Friday Sale Analysis**  
+
+## **Dataset:**  
+[Black Friday Sale Dataset](https://www.kaggle.com/datasets/rajeshrampure/black-friday-sale)  
+
+---
+
+## **Introduction to the Dataset Selection and Client**  
+
+The dataset contains transactional data from a Black Friday sale, including customer demographics, product categories, purchase amounts, and other attributes related to consumer shopping behavior. The dataset provides insights into shopping trends, customer segmentation, and purchasing patterns.  
+
+This project aims to analyze consumer behavior during the Black Friday sale, identifying factors influencing high spending, customer demographics, and popular product categories. The analysis will focus on understanding key sales trends and customer purchasing patterns to help retailers optimize future sales strategies.  
+
+---
+
+## **Preliminary Analysis (What Methods)**  
+
+1. **Data Preprocessing:**  
+   - Cleaning and handling missing values, such as those in categorical fields like product category.  
+   - Standardizing data formats, especially for purchase amounts and categorical data like customer demographics.  
+
+2. **Exploratory Data Analysis (EDA):**  
+   - Understanding **customer segmentation** by analyzing factors like age, gender, city category, and spending habits.  
+   - Identifying **top-selling product categories** and purchase distributions.  
+   - Examining **spending trends** across different demographics and locations.  
+
+3. **Statistical & Trend Analysis:**  
+   - Analyzing **spending trends** across different customer demographics (e.g., age group, city category, occupation).  
+   - Identifying **correlations** between customer attributes (age, gender, location) and spending behavior.  
+
+---
+
+## **Client’s Goals and Objectives (Munzner-Style Why Analysis)**  
+
+The client (a retailer or market analyst) wants to understand **how customer demographics influence shopping behavior on Black Friday** and how they can optimize their marketing and sales strategies for future events.  
+
+The key questions driving the project are:  
+
+1. **Which customer demographics (age, gender, city type) contribute the most to total sales?**  
+   - This will help businesses target the right audience for marketing campaigns.  
+
+2. **What are the most popular product categories, and how do they vary across different customer segments?**  
+   - This will provide insights into which product categories drive revenue and which customer groups prefer them.  
+
+3. **How do spending patterns change based on city type and customer occupation?**  
+   - This question will help businesses understand if urban or rural customers spend more and whether occupation plays a role in shopping behavior.  
+
+---
+
+## **Proposed Visualizations (How Methods & Design Motivation)**  
+
+1. **Interactive Heatmap of Customer Spending by Demographics:**  
+   - **Description:** A heatmap showing how different demographic groups (age, gender, city category) contribute to total revenue.  
+   - **Purpose:** This will help retailers identify key customer segments contributing the most to sales.  
+   - **Design Motivation:** Heatmaps provide an intuitive way to visualize high-impact groups and compare spending behavior across different segments.  
+
+2. **Bar Chart with Customer Purchase Distribution by Product Category:**  
+   - **Description:** A bar chart displaying the top-selling product categories and how purchases are distributed across different customer segments.  
+   - **Purpose:** This will highlight which product categories drive the most revenue and how different customer groups prefer specific product types.  
+   - **Design Motivation:** Bar charts are effective in comparing different categories and identifying patterns in product demand.  
+
+3. **Animated Line Graph of Purchase Trends Over Time:**  
+   - **Description:** A time-series line graph showing purchase amounts over time, segmented by city category and age group.  
+   - **Purpose:** This visualization will help understand how purchase behavior fluctuates during the Black Friday event and across different regions.  
+   - **Design Motivation:** Line graphs are ideal for showing trends over time, and animation will help highlight purchasing spikes and trends dynamically.  
+
+---
+
+## **Conclusion**  
+
+This project will provide an in-depth analysis of consumer purchasing behavior during Black Friday through interactive and animated visualizations. The heatmap will identify key customer segments, the bar chart will showcase popular product categories, and the animated line graph will reveal spending trends over time.  
+
+The final analysis will evaluate how well these visualizations address the client’s objectives and suggest potential improvements, such as predictive modeling for future sales forecasts or refining demographic targeting for marketing campaigns.  
+
+---
+
+
+
+
+
+
+
+
+# Attributions
+
+Be sure to add your own sources or indicate you have none to add. Sources can be web sites, text materials, and so on. They do not have to be hyperlinks. Other people are also sources.
+
+| Source | What is it | How used |
+|--|--|--|
+| [National Retail Federation (NRF) – Black Friday Trends](https://nrf.com/insights/holiday-and-seasonal-trends/black-friday) | Official statistics and insights into Black Friday shopping trends, spending habits, and demographics. | Used to understand consumer shopping behavior and spending trends for contextual analysis. |
+| [Statista – Black Friday Spending Statistics](https://www.statista.com/topics/4076/black-friday/) | Market research data on Black Friday sales, consumer spending patterns, and category-wise breakdowns. | Provides supporting data for visualizing sales trends and category performance. |
+| [McKinsey & Company – Black Friday Shopping Trends](https://www.mckinsey.com/industries/retail/our-insights/black-friday-shopping-trends) | Industry expert insights on how Black Friday sales strategies are evolving. | Helps frame the analysis in a broader industry context to derive actionable insights. |
+| [Towards Data Science – Black Friday Sales Data Analysis](https://towardsdatascience.com/black-friday-sales-data-analysis) | Data science blog explaining best practices for analyzing and visualizing sales data. | Used as a reference for data preprocessing, feature selection, and visualization techniques. |
+| [Data Viz Project – Choosing the Right Visualization](https://datavizproject.com/) | A resource for selecting the best data visualization techniques. | Helps in deciding which visual representations (heatmaps, bar charts, animated graphs) are best for the dataset. |
+| [Harvard Business Review – Data-Driven Decision Making in Retail](https://hbr.org/) | Articles on using data analytics and visualization for business insights in retail. | Supports the argument for using data visualization to drive decision-making in sales and marketing. |
+

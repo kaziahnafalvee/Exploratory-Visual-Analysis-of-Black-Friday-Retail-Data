@@ -1,0 +1,5 @@
+Season,Rainfall,Humidity9am,Humidity3pm,MinTemp,MaxTemp,Pressure9am,Pressure3pm,Sunshine,WindSpeed9am,WindSpeed3pm
+Monsoon,2249.0,65.81,54.12,15.14,23.27,1017.4,1015.07,7.42,14.5,20.08
+Post-Monsoon,3172.2,68.6,56.82,16.78,24.42,1017.11,1014.92,7.19,14.15,20.18
+Pre-Monsoon,2546.6,66.6,51.65,12.66,21.46,1020.27,1017.72,7.41,16.34,18.61
+Winter,2964.4,72.09,56.25,14.94,22.87,1018.55,1016.31,6.64,15.32,18.27
